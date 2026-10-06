@@ -65,16 +65,123 @@ final class TaskFlow_Ch9Tests: XCTestCase {
     
     /// Test #5 - Insertion is order is preserved
     func test_addTask_multipleTask_mantainsInsertionOrder() {
+        viewModel.addTask(title: "Task A")
+        viewModel.addTask(title: "Task B")
+        viewModel.addTask(title: "Task C")
         
+        XCTAssertEqual(viewModel.tasks[0].title, "Task A")
+        XCTAssertEqual(viewModel.tasks[2].title, "Task C")
     }
     
     /// Test #6 - Toggle twice return to original state
     func test_toggleCompletion_calledTwice_returnToIncompleted() {
+        viewModel.addTask(title: "Task A")
+        let taskId = viewModel.tasks[0].id
         
+        viewModel.toggleCompletion(id: taskId)
+        viewModel.toggleCompletion(id: taskId)
+        
+        XCTAssertFalse(viewModel.tasks[0].isCompleted)
     }
     
     /// Test #7 - New viewModel starts empty
     func test_newViewModel_startWithEmptyTask() {
-        
+        XCTAssertTrue(viewModel.tasks.isEmpty)
     }
+    
+    // MARK: Class #2 TDD
+    
+    /// Test #8 - Default Priority
+    func test_addTask_defaultPriorityIsMedium() {
+        viewModel.addTask(title: "Task A")
+        XCTAssertEqual(viewModel.tasks[0].priority, .medium)
+    }
+ 
+    /// Test #9 - High Priority
+    func test_addTask_withHighPriority_storesPriority() {
+        viewModel.addTask(title: "Urgent", priority: .high)
+        XCTAssertEqual(viewModel.tasks[0].priority, .high)
+    }
+    
+    /// Test #10 - Filter Priority - Create a filter, multiple task with same priority
+    /// Arrange: Add low + high + high / Assert: task(for high).count == 2
+    func test_tasks_forPriority_returnsOnlyMatchingTasks() {
+        // Arrange - Act
+        viewModel.addTask(title: "Low", priority: .low)
+        viewModel.addTask(title: "High 1", priority: .high)
+        viewModel.addTask(title: "High 2", priority: .high)
+        
+        // Assert
+        XCTAssertEqual(viewModel.tasks(for: .high).count, 2)
+        XCTAssert(viewModel.tasks(for: .high).allSatisfy { $0.priority == .high })
+    }
+    
+    /// Test #11 - Sort Priority
+    func test_taskSortedByPriority_returnsHighFirst() {
+        // Arrange
+        viewModel.addTask(title: "Low", priority: .low)
+        viewModel.addTask(title: "Medium", priority: .medium)
+        viewModel.addTask(title: "High 2", priority: .high)
+        
+        // Act
+        let sorted = viewModel.tasksSortedByPriority
+        
+        // Assert
+        XCTAssertEqual(sorted[0].priority, .high)
+        XCTAssertEqual(sorted[1].priority, .medium)
+        XCTAssertEqual(sorted[2].priority, .low)
+    }
+    
+    /// Test #12 - Test default is favorite false
+    func test_addTask_defaultFavoriteFalse() {
+        // Act
+        viewModel.addTask(title: "Task A", priority: .medium)
+        
+        // Assert
+        XCTAssertFalse(viewModel.tasks[0].isFavorite)
+    }
+    
+    /// Test #13 - ToggleFavorite sets true / (id: UUID) - pass as paremeter, create index
+    func test_toggleFavorite_setsIsFavoriteTrue() {
+        // Arrange
+        viewModel.addTask(title: "Task A", priority: .medium)
+        let id = viewModel.tasks[0].id
+        
+        // Act
+        viewModel.toggleFavorite(id: id)
+        
+        // Assert
+        XCTAssertTrue(viewModel.tasks[0].isFavorite)
+    }
+    
+    /// Test #14 - Toggle twice returns to false
+    func test_toggleFavorite_setsIsFavoriteFalse() {
+        // Arrange
+        viewModel.addTask(title: "Task A", priority: .medium)
+        let id = viewModel.tasks[0].id
+        
+        // Act
+        viewModel.toggleFavorite(id: id)
+        viewModel.toggleFavorite(id: id)
+        
+        // Assert
+        XCTAssertFalse(viewModel.tasks[0].isFavorite)
+    }
+    
+    /// Test #15 - Favorite tasks filters correctly
+    func test_favoriteTasks_returnsOnlyFavorites() {
+        // Arrange
+        viewModel.addTask(title: "Task A", priority: .medium)
+        viewModel.addTask(title: "Task B", priority: .medium)
+        let starredId = viewModel.tasks[1].id
+    
+        // Act
+        viewModel.toggleFavorite(id: starredId)
+        
+        // Assert
+        XCTAssertEqual(viewModel.favoriteTasks.count, 1)
+        XCTAssertEqual(viewModel.favoriteTasks.first?.title, "Task B")
+    }
+    
+    
 }

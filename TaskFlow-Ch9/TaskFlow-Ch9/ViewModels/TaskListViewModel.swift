@@ -13,10 +13,10 @@ class TaskListViewModel: ObservableObject {
     
     // MARK: Class #1 Functions
     /// Add task function
-    func addTask(title: String) {
+    func addTask(title: String, priority: Priority = .medium) {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        tasks.append(TaskItem(title: trimmed))
+        tasks.append(TaskItem(title: trimmed, priority: priority))
     }
     
     /// Delete task function
@@ -35,4 +35,35 @@ class TaskListViewModel: ObservableObject {
     var completedCount: Int {
         tasks.filter { $0.isCompleted }.count
     }
+    
+    // MARK: Class #2 TDD
+    
+    /// Filter tasks by priority
+    func tasks(for priority: Priority) -> [TaskItem] {
+        tasks.filter { $0.priority == priority }
+    }
+    
+    /// Sorted task by priority
+    var tasksSortedByPriority: [TaskItem] {
+        let order: [Priority] = [.high, .medium, .low]
+        
+        return tasks.sorted {
+            guard let i = order.firstIndex(of: $0.priority),
+                  let j = order.firstIndex(of: $1.priority)
+            else { return false }
+            return i < j
+        }
+    }
+    
+    /// Toggle favorite
+    func toggleFavorite(id: UUID) {
+        guard let index = tasks.firstIndex(where: { $0.id == id }) else { return }
+        tasks[index].isFavorite.toggle()
+    }
+    
+    /// Favorite tasks filter
+    var favoriteTasks: [TaskItem] {
+        tasks.filter { $0.isFavorite }
+    }
+    
 }
