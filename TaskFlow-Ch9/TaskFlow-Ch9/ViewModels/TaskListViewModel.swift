@@ -10,6 +10,17 @@ import Combine
 
 class TaskListViewModel: ObservableObject {
     @Published var tasks: [TaskItem] = []
+    private let service: TaskServiceProtocol
+    
+    init(service: TaskServiceProtocol = TaskService()) {
+        self.service = service
+    }
+    
+    // MARK: Class #3 Functions
+    
+    func loadTasks() {
+        tasks = service.fetchTasks()
+    }
     
     // MARK: Class #1 Functions
     /// Add task function

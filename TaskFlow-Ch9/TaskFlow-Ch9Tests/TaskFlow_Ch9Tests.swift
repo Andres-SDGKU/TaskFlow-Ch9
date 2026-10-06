@@ -184,4 +184,38 @@ final class TaskFlow_Ch9Tests: XCTestCase {
     }
     
     
+    // MARK: Class #3 Stubs - Mocks - DI
+    
+    /// Test #16 - Stub
+    func test_loadTasks_returnsStubbedTasks() {
+        // Arrange
+        let viewModel = TaskListViewModel(service: StubTaskService())
+        
+        // Act
+        viewModel.loadTasks()
+        
+        // Assert
+        XCTAssertEqual(viewModel.tasks.count, 3)
+     }
+    
+    /// Test  #17 - Stub with custom array
+    func test_loadTasks_withCustomStubbedData_returnsThatData() {
+        let customTasks = [TaskItem(title: "Only one task", priority: .high)]
+        let viewModel = TaskListViewModel(service: StubTaskService(stubbedTasks: customTasks))
+        
+        viewModel.loadTasks()
+        
+        XCTAssertEqual(viewModel.tasks.first?.title, "Only one task")
+    }
+    
+    /// Test #18 - Mocks
+    func test_removeTask_callsServiceDeleteExactlyOne() {
+        let mockService = MockTaskService(taskToReturn: [TaskItem(title: "Sample", priority: .medium)])
+        let viewModel = TaskListViewModel(service: mockService)
+        
+        viewModel.loadTasks()
+        viewModel.removeTask(at: 0)
+        
+        XCTAssertEqual(mockService.deleteCallCount, 1)
+    }
 }
