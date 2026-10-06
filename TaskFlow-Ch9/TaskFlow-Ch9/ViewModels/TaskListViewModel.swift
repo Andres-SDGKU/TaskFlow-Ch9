@@ -17,9 +17,17 @@ class TaskListViewModel: ObservableObject {
     }
     
     // MARK: Class #3 Functions
-    
+    /// Load tasks with Stub
     func loadTasks() {
         tasks = service.fetchTasks()
+    }
+    
+    /// Remove tasks with mocks and modified from first class
+    func removeTask(at index: Int) {
+        guard tasks.indices.contains(index) else { return }
+        let removedId = tasks[index].id
+        tasks.remove(at: index)
+        service.delete(id: removedId)
     }
     
     // MARK: Class #1 Functions
@@ -29,13 +37,7 @@ class TaskListViewModel: ObservableObject {
         guard !trimmed.isEmpty else { return }
         tasks.append(TaskItem(title: trimmed, priority: priority))
     }
-    
-    /// Delete task function
-    func removeTask(at index: Int) {
-        guard tasks.indices.contains(index) else { return }
-        tasks.remove(at: index)
-    }
-    
+        
     /// Toggle completion function
     func toggleCompletion(id: UUID) {
         guard let index = tasks.firstIndex(where: { $0.id == id}) else { return }

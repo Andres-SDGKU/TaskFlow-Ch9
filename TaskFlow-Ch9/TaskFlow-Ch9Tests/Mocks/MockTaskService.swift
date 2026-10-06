@@ -7,3 +7,13 @@
 
 import Foundation
 @testable import TaskFlow_Ch9
+
+class MockTaskService: TaskServiceProtocol {
+    var deleteCallCount = 0
+    private var tasksToReturn: [TaskItem]
+    init(tasksToReturn: [TaskItem] = []) { self.tasksToReturn = tasksToReturn }
+    func fetchTasks() -> [TaskItem] {
+        tasksToReturn
+    }
+    func delete(id: UUID) { deleteCallCount += 1 }
+}

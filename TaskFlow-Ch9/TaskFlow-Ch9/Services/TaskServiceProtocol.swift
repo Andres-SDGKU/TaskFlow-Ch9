@@ -9,10 +9,14 @@ import Foundation
 
 protocol TaskServiceProtocol {
     func fetchTasks() -> [TaskItem]
+    func delete(id: UUID)
 }
 
 class TaskService: TaskServiceProtocol {
     func fetchTasks() -> [TaskItem] { [] }
+    func delete(id: UUID) {
+        // Real backend call for delete
+    }
 }
 
 class StubTaskService: TaskServiceProtocol {
@@ -24,5 +28,8 @@ class StubTaskService: TaskServiceProtocol {
     ]) { self.stubbedTasks = stubbedTasks }
     func fetchTasks() -> [TaskItem] {
         stubbedTasks
+    }
+    func delete(id: UUID) {
+       // Stubs don't need real behavior
     }
 }

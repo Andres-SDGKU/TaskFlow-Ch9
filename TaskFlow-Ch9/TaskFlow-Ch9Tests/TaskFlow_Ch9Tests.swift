@@ -210,7 +210,7 @@ final class TaskFlow_Ch9Tests: XCTestCase {
     
     /// Test #18 - Mocks
     func test_removeTask_callsServiceDeleteExactlyOne() {
-        let mockService = MockTaskService(taskToReturn: [TaskItem(title: "Sample", priority: .medium)])
+        let mockService = MockTaskService(tasksToReturn: [TaskItem(title: "Sample", priority: .medium)])
         let viewModel = TaskListViewModel(service: mockService)
         
         viewModel.loadTasks()
