@@ -13,6 +13,7 @@ struct TaskItem: Identifiable, Equatable {
     var isCompleted: Bool = false
     var isFavorite: Bool = false
     var priority: Priority = .medium
+    var dueDate: Date? = nil
 }
 
 enum Priority: String, CaseIterable {

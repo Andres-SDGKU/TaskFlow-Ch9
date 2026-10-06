@@ -218,4 +218,14 @@ final class TaskFlow_Ch9Tests: XCTestCase {
         
         XCTAssertEqual(mockService.deleteCallCount, 1)
     }
+    
+    /// Test #19 - Test Notifications Scheduling Protocol
+    func test_addTask_withDueDate_schedulesReminderExactlyOnce() {
+        let mockScheduler = MockNotificationScheduler()
+        let viewModel = TaskListViewModel(notificationScheduler: mockScheduler)
+        
+        viewModel.addTask(title: "Submit report", dueDate: Date().addingTimeInterval(3600))
+        
+        XCTAssertEqual(mockScheduler.scheduleCallCount, 1)
+    }
 }

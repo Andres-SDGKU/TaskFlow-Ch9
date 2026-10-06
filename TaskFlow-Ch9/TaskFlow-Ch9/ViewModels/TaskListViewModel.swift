@@ -11,9 +11,14 @@ import Combine
 class TaskListViewModel: ObservableObject {
     @Published var tasks: [TaskItem] = []
     private let service: TaskServiceProtocol
+    private let notificationScheduler: NotificationsSchedulingProtocol
     
-    init(service: TaskServiceProtocol = TaskService()) {
+    init(
+        service: TaskServiceProtocol = TaskService(),
+        notificationScheduler: NotificationsSchedulingProtocol = NotificationsScheduler()
+    ){
         self.service = service
+        self.notificationScheduler = notificationScheduler
     }
     
     // MARK: Class #3 Functions
@@ -32,12 +37,16 @@ class TaskListViewModel: ObservableObject {
     
     // MARK: Class #1 Functions
     /// Add task function
-    func addTask(title: String, priority: Priority = .medium) {
+    func addTask(title: String, priority: Priority = .medium, dueDate: Date? = nil) {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        tasks.append(TaskItem(title: trimmed, priority: priority))
+        let task = TaskItem(title: trimmed, priority: priority, dueDate: dueDate)
+        tasks.append(task)
+        if dueDate != nil {
+            notificationScheduler.scheduleReminder(for: task)
+        }
     }
-        
+    
     /// Toggle completion function
     func toggleCompletion(id: UUID) {
         guard let index = tasks.firstIndex(where: { $0.id == id}) else { return }
@@ -63,7 +72,7 @@ class TaskListViewModel: ObservableObject {
         return tasks.sorted {
             guard let i = order.firstIndex(of: $0.priority),
                   let j = order.firstIndex(of: $1.priority)
-            else { return false }
+                    else { return false }
             return i < j
         }
     }
